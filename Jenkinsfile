@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'Node18' // Match the name configured in Jenkins > Global Tools
+        nodejs 'Node24' // Match the name configured in Jenkins > Global Tools
     }
 
     environment {
