@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+@echo off
 
-echo 'The following command terminates the "npm start" process using its PID'
-echo '(written to ".pidfile"), all of which were conducted when "deliver.sh"'
-echo 'was executed.'
-set -x
-kill $(cat .pidfile)
+echo The following command terminates the "npm start" (Node.js) process...
+echo This uses the PID stored in the ".pidfile" created by "deliver.bat".
+
+REM Read the PID from .pidfile
+set /p PID=<.pidfil

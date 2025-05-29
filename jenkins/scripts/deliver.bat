@@ -1,29 +1,21 @@
-#!/usr/bin/env sh
+@echo off
 
-echo 'The following "npm" command builds your Node.js/React application for'
-echo 'production in the local "build" directory (i.e. within the'
-echo '"C:\Shashikanth_Data\EDUREKA\devops-practice" directory),'
-echo 'correctly bundles React in production mode and optimizes the build for'
-echo 'the best performance.'
-set -x
+echo The following "npm" command builds your Node.js/React application for production...
+echo This will generate the "build" folder with optimized static files.
 npm run build
-set +x
 
-echo 'The following "npm" command runs your Node.js/React application in'
-echo 'development mode and makes the application available for web browsing.'
-echo 'The "npm start" command has a trailing ampersand so that the command runs'
-echo 'as a background process (i.e. asynchronously). Otherwise, this command'
-echo 'can pause running builds of CI/CD applications indefinitely. "npm start"'
-echo 'is followed by another command that retrieves the process ID (PID) value'
-echo 'of the previously run process (i.e. "npm start") and writes this value to'
-echo 'the file ".pidfile".'
-set -x
-npm start &
-sleep 1
-echo $! > .pidfile
-set +x
+echo -----------------------------------------------------
+echo The following "npm" command runs the app in development mode.
+echo It starts the app and writes the process ID to ".pidfile".
+start /B npm start
+REM Wait briefly to allow process to start
+ping -n 3 127.0.0.1 > nul
 
-echo 'Now...'
-echo 'Visit http://localhost:3000 to see your Node.js/React application in action.'
-echo '(This is why you specified the "args ''-p 3000:3000''" parameter when you'
-echo 'created your initial Pipeline as a Jenkinsfile.)'
+REM Find the PID of the npm process (this is a workaround for Windows)
+for /f "tokens=2" %%a in ('tasklist ^| findstr "node.exe"') do (
+    echo %%a > .pidfile
+    goto done
+)
+:done
+
+echo Visit http://localhost:3000 to view your React application in action.
