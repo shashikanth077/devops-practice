@@ -20,18 +20,17 @@ pipeline {
                 bat 'dir /s'
             }
         }
-        stage('Build') {
+        stage('Clean Install') {
             steps {
+                bat 'rmdir /s /q node_modules'
                 bat 'npm install'
             }
         }
-
         stage('Test') {
             steps {
-                bat './jenkins/scripts/test.bat'
+                bat 'npm test'
             }
         }
-
         stage('Deliver') {
             steps {
                 bat './jenkins/scripts/deliver.bat'
