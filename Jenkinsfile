@@ -20,9 +20,8 @@ pipeline {
                 bat 'dir /s'
             }
         }
-        stage('Clean Install') {
+        stage('Build') {
             steps {
-                bat 'rmdir /s /q node_modules'
                 bat 'npm install'
             }
         }
