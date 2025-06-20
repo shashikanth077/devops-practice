@@ -10,6 +10,16 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Debug List Files') {
+            steps {
+                bat 'dir /s'
+            }
+        }
         stage('Build') {
             steps {
                 bat 'npm install'
