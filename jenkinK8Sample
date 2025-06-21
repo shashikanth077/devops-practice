@@ -1,69 +1,41 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    IMAGE_NAME = "shashikanth044/react-app"
-    TAG = "latest"
-    DOCKER_CREDENTIALS_ID = "docker-hub-creds"     // Create this in Jenkins Credentials
-  }
-
-  stages {
-    stage('Checkout Code') {
-      steps {
-        checkout scm
-      }
+    tools {
+        nodejs 'Node24' // Match the name configured in Jenkins > Global Tools
     }
 
-    stage('Install Dependencies') {
-      steps {
-        sh 'npm install'
-      }
+    environment {
+        CI = 'true'
     }
 
-    stage('Build React App') {
-      steps {
-        sh 'npm run build'
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-        script {
-          sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
-    }
-
-    stage('Push Docker Image to Docker Hub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh """
-            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-            docker push ${IMAGE_NAME}:${TAG}
-          """
+        stage('Debug List Files') {
+            steps {
+                bat 'dir /s'
+            }
         }
-      }
-    }
-
-    stage('Deploy to Kubernetes') {
-      steps {
-        withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
-          sh '''
-            export KUBECONFIG=$KUBECONFIG_FILE
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-          '''
+        stage('Build') {
+            steps {
+                bat 'npm install'
+            }
         }
-      }
+        stage('Test') {
+            steps {
+                bat 'npm test'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                bat './jenkins/scripts/deliver.bat'
+                // input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                // bat './jenkins/scripts/kill.bat'
+            }
+        }
     }
-  }
-
-  post {
-    failure {
-      echo 'Pipeline failed! Check logs.'
-    }
-    success {
-      echo 'Deployment complete! React app is live on Kubernetes.'
-    }
-  }
 }

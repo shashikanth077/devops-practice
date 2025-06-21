@@ -36,14 +36,19 @@ pipeline {
 
     stage('Push Docker Image to Docker Hub') {
       steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          bat """
-            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-            docker push ${IMAGE_NAME}:${TAG}
-          """
+        withCredentials([usernamePassword(
+          credentialsId: 'docket-test-id',
+          usernameVariable: 'DOCKER_USER',
+          passwordVariable: 'DOCKER_PASS'
+        )]) {
+          bat '''
+            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+            docker push %DOCKER_USER%/react-app:latest
+          '''
         }
       }
     }
+
 
     stage('Deploy to Kubernetes') {
       steps {
