@@ -5,6 +5,7 @@ pipeline {
     IMAGE_NAME = "shashikanth044/react-app"
     TAG = "latest"
     DOCKER_CREDENTIALS_ID = "docket-test-id"     // Create this in Jenkins Credentials
+    KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-creds'
   }
 
   stages {
@@ -50,17 +51,18 @@ pipeline {
     }
 
 
-    stage('Deploy to Kubernetes') {
-      steps {
-        withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
-          bat '''
-            export KUBECONFIG=$KUBECONFIG_FILE
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-          '''
-        }
-      }
+   stage('Deploy to Kubernetes') {
+  steps {
+    withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
+      bat '''
+        set KUBECONFIG=%KUBECONFIG_FILE%
+        kubectl apply -f k8s\\deployment.yaml
+        kubectl apply -f k8s\\service.yaml
+      '''
     }
+  }
+}
+
   }
 
   post {
