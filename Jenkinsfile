@@ -16,20 +16,20 @@ pipeline {
 
     stage('Install Dependencies') {
       steps {
-        sh 'npm install'
+        bat 'npm install'
       }
     }
 
     stage('Build React App') {
       steps {
-        sh 'npm run build'
+        bat 'npm run build'
       }
     }
 
     stage('Build Docker Image') {
       steps {
         script {
-          sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+          bat "docker build -t ${IMAGE_NAME}:${TAG} ."
         }
       }
     }
@@ -37,7 +37,7 @@ pipeline {
     stage('Push Docker Image to Docker Hub') {
       steps {
         withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh """
+          bat """
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
             docker push ${IMAGE_NAME}:${TAG}
           """
@@ -48,7 +48,7 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
-          sh '''
+          bat '''
             export KUBECONFIG=$KUBECONFIG_FILE
             kubectl apply -f k8s/deployment.yaml
             kubectl apply -f k8s/service.yaml
