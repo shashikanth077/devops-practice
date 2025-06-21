@@ -4,7 +4,7 @@ pipeline {
   environment {
     IMAGE_NAME = "shashikanth044/react-app"
     TAG = "latest"
-    DOCKER_CREDENTIALS_ID = "docker-hub-creds"     // Create this in Jenkins Credentials
+    DOCKER_CREDENTIALS_ID = "docket-test-id"     // Create this in Jenkins Credentials
   }
 
   stages {
