@@ -6,10 +6,10 @@ npm run build
 
 echo -----------------------------------------------------
 echo The following "npm" command runs the app in development mode.
-echo It starts the app and writes the process ID to ".pidfile".
+echo It starts the app and writes the process ID to "..\.pidfile".
 
-:: First, clear any old .pidfile to ensure we write a new one
-if exist .pidfile del .pidfile
+:: First, clear any old ..\.pidfile to ensure we write a new one
+if exist ..\.pidfile del ..\.pidfile
 
 :: Start npm start in a detached background process.
 :: We need to find its PID after it actually spins up.
@@ -32,7 +32,7 @@ set /a "attempts=0"
     for /f "tokens=2,*" %%a in ('wmic process where "name='node.exe' AND commandline LIKE '%%react-scripts start%%'" get processid,commandline /value ^| findstr "ProcessId="') do (
         :: Extract the PID from the "ProcessId=XYZ" line
         for /f "delims== tokens=2" %%p in ("%%a") do (
-            echo %%p > .pidfile
+            echo %%p > ..\.pidfile
             set "pid_found=true"
             goto PID_FOUND
         )
@@ -49,17 +49,17 @@ set /a "attempts=0"
 goto FIND_PID_LOOP
 
 :PID_FOUND
-echo PID captured to .pidfile.
+echo PID captured to ..\.pidfile.
 echo Visit http://localhost:3000 to view your React application in action.
 
 :: IMPORTANT: The command to terminate the process is not in this script block.
 :: It would be in a separate step later in your Jenkins pipeline,
 :: or in a `post` section to ensure cleanup. Example for termination:
-:: if exist .pidfile (
-::    set /p PID=<.pidfile
+:: if exist ..\.pidfile (
+::    set /p PID=<..\.pidfile
 ::    echo Terminating Node.js/React process with PID: %PID%
 ::    taskkill /PID %PID% /F
-::    del .pidfile
+::    del ..\.pidfile
 :: ) else (
-::    echo .pidfile not found. Cannot terminate process.
+::    echo ..\.pidfile not found. Cannot terminate process.
 :: )
